@@ -10,7 +10,7 @@ class HWPLC:
         self.stationB_light = False
         self.stationC_light = False
         self.check_occupancies()
-        #self.close_crossing()
+        self.close_crossing()
         
     def check_occupancies(self):
         """
@@ -29,12 +29,18 @@ class HWPLC:
         length_array = len(self.block_array)
         for i in range(length_array):
             if (self.block_array[i]) or ( self.block_array[i-1]) or (i < length_array - 1 and self.block_array[i+1]):
-                print(f"Closing Crossing Gate.")
+                #print(f"Closing Crossing Gate.")
                 self.occupancy_var = True
               
             else:
-                print(f"Opening Crossing Gate, Pedestrians Free To Cross.")
+                #print(f"Opening Crossing Gate, Pedestrians Free To Cross.")
                 self.occupancy_var = False
+
+        if self.occupancy_var:
+            print(f"Closing Crossing Gate.")
+
+        else:
+            print(f"Opening Crossign Gate. Pedestrains Can Now Cross Tracks.")
 
         self.light_signals()
 
@@ -57,21 +63,19 @@ class HWPLC:
         If both are occupied, all trains will stop. 
         """
 
+        if self.block_array[6] and self.block_array[11]:
+            self.emergency_stop()
 
-        TrackSwitch = "ON"
-
-        if self.block_array[6] and not self.block_array[11]:
-            
-            print(f"Switch from Block 5 to 11 is {TrackSwitch}")
+        elif self.block_array[6] or not self.block_array[11]:
+            print(f"Switch from Block 5 to 11 is ON")
             print(f"Traveling to Station C, Authority: {self.authority} miles per hour")
 
-        if self.block_array[11] and not self.block_array[6]:
-            
-            print(f"Switch from Block 5 to 6 is {TrackSwitch}")
+        elif self.block_array[11] or not self.block_array[6]:
+            print(f"Switch from Block 5 to 6 is ON")
             print(f"Traveling to Staton B, Authority: {self.authority} miles per hour")
         
-        else:
-            self.emergency_stop()
+
+        
 
     def emergency_stop(self):
         """
@@ -101,7 +105,7 @@ def main():
 
     blue_line3 = [False, False, False, False, False, False, True, False, False, False, False, True, False, False, False, False ]
     print(f"Blue Line Instance 3")
-    plc3 = HWPLC(blue_line2, authority)
+    plc3 = HWPLC(blue_line3, authority)
 
 
 if __name__ == "__main__":
