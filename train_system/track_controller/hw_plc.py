@@ -54,7 +54,7 @@ class HWPLC:
         else:
             light_color = "GREEN"
            
-        print(f"Track Light Signal:{light_color}")
+        print(f"Track Light Signal: {light_color}")
 
     def switch_positions(self):
         """
@@ -94,18 +94,10 @@ def main():
     """
 
     authority = 45
-    #            station   1      2      3     4       5      6      7      8      9     10      11     12     13     14     15
+    #            yard   1      2      3     4       5      6      7      8      9     10      11     12     13     14     15
     blue_line1 = [False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False ]
     print(f"Blue Line Instance 1")
     plc = HWPLC(blue_line1, authority)
-
-    blue_line2 = [False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False ]
-    print(f"Blue Line Instance 2")
-    plc2 = HWPLC(blue_line2, authority)
-
-    blue_line3 = [False, False, False, False, False, False, True, False, False, False, False, True, False, False, False, False ]
-    print(f"Blue Line Instance 3")
-    plc3 = HWPLC(blue_line3, authority)
 
 
 if __name__ == "__main__":
