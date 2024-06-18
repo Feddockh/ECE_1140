@@ -1,91 +1,91 @@
 # train_system/track_controller/HW_PLC.py
 class HWPLC:
-    def __init__(self, block_array,authority):
+ #INITIALIZE
+ def __init__(self, new_track_occupancies, Authority):
         """
-        Initialize Hardware Track Controller. Initializes the block_array (list of bools that are the track occupancies) Calls the check_occupaancies funcrtion
+        Initialize all variables
         """
-        self.authority = authority
-        self.block_array = block_array
-        self.occupancy_var = False
-        self.stationB_light = False
-        self.stationC_light = False
-        self.check_occupancies()
-        self.close_crossing()
-        
-    def check_occupancies(self):
-        """
-        Check and print occupancy status of each block, then call the switch position function to determine if we should switch
-        """
-        num_blocks = len(self.block_array)
-        for i in range(num_blocks):
-            if self.block_array[i]:
-                self.switch_positions()
-        
-    def close_crossing(self):
-        """
-        Check if adjacent blocks are occupied to decide closing the crossing gate.   Prints out whether the gate is closing or not.
-        """
-        self.occupancy_var = False
-        length_array = len(self.block_array)
-        for i in range(length_array):
-            if (self.block_array[i]) or ( self.block_array[i-1]) or (i < length_array - 1 and self.block_array[i+1]):
-                #print(f"Closing Crossing Gate.")
-                self.occupancy_var = True
-              
-            else:
-                #print(f"Opening Crossing Gate, Pedestrians Free To Cross.")
-                self.occupancy_var = False
+        self.Authority = Authority
+        self.track_occupancies = new_track_occupancies
+        self.switch_position = False
+        self.light_StationB = False
+        self.light_StationC = False
+        self.crossing_signal = False
+        self.plc()
 
-        if self.occupancy_var:
-            print(f"Closing Crossing Gate.")
+ #PLC
+ def plc(self):
+    """
+    This is a PLC program intended to determine the switch states, Light signals, and crossign signals.
+    There are 5 scenarios that this PLC simulates
+            1) Blocks 6-10 are occupied, so the switch must switch to blocks 11-15 and force the train to station C
+                light to station C turns green, light to station B turns red. 
 
-        else:
-            print(f"Opening Crossign Gate. Pedestrains Can Now Cross Tracks.")
+            2) Blocks 11 - 15 are occupied, so the switch must switch to blocks 6-10 and force the train to station B. 
+                light to station B turns green, light to station C turns red
 
-        self.light_signals()
+            3) Both blocks 6-10 and 11-15 are occupied, so light signals must turn
+            4) Blocks 2-4 are occupied, crossing gates come down
+            5) Blocks 2-4 are unoccupied, crossing gates go up, and pedestrians can cross
+    
+    Returns:
+        switch_position(bool): Bool representing the track switch positions
+                        0 = connected to block 6, train will head towards Station B
+                        1 = connected to block 11, train will head towards Station C
+        crossing_signal(bool): Bool representing the Crossing State 
+                        0 = gate is up, pedestrians can cross
+                        1 = gate is down, pedestrians must stop
+        light_StationB(bool): Bool representing light signal for the track headed towards StationB 0 = GREEN, 1 = RED
+        light_StationC(bool): Bool representing light signal for the track headed towards StationC 0 = GREEN, 1 = RED
 
-    def light_signals(self):
-        """
-        In this function, based on occupancies, this function will be used to determine light signals RED = Occupied, stop... GREEN = Unoccupied, GO
-        """
-        light_color = ""
-        if self.occupancy_var:
-            light_color = "RED"
-        else:
-            light_color = "GREEN"
-           
-        print(f"Track Light Signal: {light_color}")
 
-    def switch_positions(self):
-        """
-        This is the function for switching the actual switches.
-        Going to use the occupancies and check at the switch point if any of block 11 or 6 are occupied
-        If both are occupied, all trains will stop. 
-        """
+    """
+    #Determining switch position
+    #Check if both tracks are occupied (ERROR CHECK)
+    if((self.track_occupancies[11] or self.track_occupancies[12] or self.track_occupancies[13] 
+        or self.track_occupancies[14] or self.track_occupancies[15])and (self.track_occupancies[6] or self.track_occupancies[7] or self.track_occupancies[8] 
+        or self.track_occupancies[9] or self.track_occupancies[10])):
+        self.light_StationB = False
+        self.light_StationC = False
+        self.Authority = 0
+        print("EMERGENCY WARNING!")
+        print("BOTH TRACKS ARE OCCUPIED")
+        print("ALL TRAINS MUST STOP")
+        print("STATION B = RED")
+        print("STATION C = RED")
+    
+    #Check if path to station B is occupied
+    elif (self.track_occupancies[6] or self.track_occupancies[7] or self.track_occupancies[8] 
+        or self.track_occupancies[9] or self.track_occupancies[10]):
+        self.switch_position = True
+        self.light_StationC = False
+        self.light_StationB = True
+        print("Switch is connected to Block 6.")
+        print("Station C Light is RED")
+        print("Station B light is GREEN")
+        print("Train is headed towards Station B.")
 
-        if self.block_array[6] and self.block_array[11]:
-            self.emergency_stop()
+    #check if path to station C is occupied
+    elif(self.track_occupancies[11] or self.track_occupancies[12] or self.track_occupancies[13] 
+        or self.track_occupancies[14] or self.track_occupancies[15]):
+        self.switch_position = False
+        self.light_StationC = True
+        self.light_StationB = False
+        print("Switch is connected to Block 11.")
+        print("Station C Light is GREEN.")
+        print("Station B light is RED.")
+        print("Train is headed towards Station C.")
 
-        elif self.block_array[6] or not self.block_array[11]:
-            print(f"Switch from Block 5 to 11 is ON")
-            print(f"Traveling to Station C, Authority: {self.authority} miles per hour")
+    #Determing crossing signal / gate
+    if (self.track_occupancies[2] or self.track_occupancies[3] or self.track_occupancies[4]):
+        self.crossing_signal = True
+        print("Crossing Signal is down. Do Not Cross!")
+    else:
+        self.crossing_signal = False
+        print("Crossing Signal is up. Pedestrians can now cross the tracks.")
 
-        elif self.block_array[11] or not self.block_array[6]:
-            print(f"Switch from Block 5 to 6 is ON")
-            print(f"Traveling to Staton B, Authority: {self.authority} miles per hour")
-        
+    return self.switch_position, self.crossing_signal, self.light_StationB, self.light_StationC, self.Authority    
 
-        
-
-    def emergency_stop(self):
-        """
-        E-STOP Function
-        Goal:
-            set authority to zero and lights to red
-        """
-        self.authority = 0
-        print(f"EMERGENCY STOP! STOPPING ALL TRAINS!")
-        
 
 # Test main function
 def main():
@@ -93,11 +93,12 @@ def main():
     Test Bench
     """
 
-    authority = 45
+    Authority = 55
     #            yard   1      2      3     4       5      6      7      8      9     10      11     12     13     14     15
-    blue_line1 = [False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False ]
+    blue_line1 = [False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False ]
     print(f"Blue Line Instance 1")
-    plc = HWPLC(blue_line1, authority)
+
+    HWPLC(blue_line1, Authority)
 
 
 if __name__ == "__main__":
