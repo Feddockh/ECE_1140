@@ -86,7 +86,7 @@ class HWPLC:
 
     return self.switch_position, self.crossing_signal, self.light_StationB, self.light_StationC, self.authority    
 
-"""
+
 # Test main function
 def main():
     """
@@ -103,4 +103,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-"""
