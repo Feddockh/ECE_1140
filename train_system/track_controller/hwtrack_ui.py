@@ -15,7 +15,7 @@ class TrackControllerWindow(QMainWindow):
 
         self.setWindowTitle("Hardware Track Controller UI")
         self.setGeometry(100, 100, 800, 600)
-
+    
         # Line selection dropdown
         self.line_combo = QComboBox()
         self.line_combo.addItems(["Blue Line", "Green Line", "Red Line"])
