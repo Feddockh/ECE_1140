@@ -1,4 +1,4 @@
-# train_system/track_controller/HW_PLC.py
+# train_system/track_controller/hw_plc.py
 class HWPLC:
  #INITIALIZE
  def __init__(self, track_occupancies, authority):
@@ -86,12 +86,12 @@ class HWPLC:
 
     return self.switch_position, self.crossing_signal, self.light_StationB, self.light_StationC, self.authority    
 
-
+"""
 # Test main function
 def main():
     """
-    Test Bench
-    """
+    #Test Bench
+"""
 
     authority = 55
     #            yard   1      2      3     4       5      6      7      8      9     10      11     12     13     14     15
@@ -103,3 +103,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""
