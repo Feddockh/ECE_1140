@@ -1,10 +1,7 @@
-# train_system/track_controller/hwtrack_ui.py
-
-
 import sys
-from PyQt6.QtGui import QPalette, QColor
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QApplication,QLineEdit, QMainWindow,QTableWidgetItem,QTableWidget, QPushButton, QVBoxLayout, QWidget, QComboBox, QMessageBox #QLabel
-from PyQt6.QtCore import Qt 
+from PyQt6.QtGui import QColor
+from PyQt6.QtWidgets import QHBoxLayout, QLabel, QApplication, QLineEdit, QMainWindow, QTableWidgetItem, QTableWidget, QPushButton, QVBoxLayout, QWidget, QComboBox, QMessageBox
+from PyQt6.QtCore import Qt
 
 class TrackControllerWindow(QMainWindow):
     
@@ -14,27 +11,92 @@ class TrackControllerWindow(QMainWindow):
         self.setWindowTitle("Hardware Track Controller UI")
         self.setGeometry(100, 100, 800, 600)
 
-        self.table_widget = QTableWidget()
-        self.table_widget.setRowCount(15) #16 rows, 15 for tracks 1 - 15
-        self.table_widget.setColumnCount(7) #6 columns
+        # Line selection dropdown
+        self.line_combo = QComboBox()
+        self.line_combo.addItems(["Blue Line", "Green Line", "Red Line"])
+        self.line_combo.currentIndexChanged.connect(self.update_table_for_line)
 
-        #column headers
+        # Color bar at the top
+        self.color_bar = QLabel()
+        self.color_bar.setFixedHeight(5)  # Set the height of the color bar
+        self.update_color_bar()
+
+        # Table widget initialization
+        self.table_widget = QTableWidget()
+        self.table_widget.setRowCount(15)  # 16 rows, 15 for tracks 1 - 15
+        self.table_widget.setColumnCount(7)  # 7 columns
+
+        # Column headers
         self.table_widget.setHorizontalHeaderLabels([
-            "Block", "Track Occupancy", "Switch State", "Speed(miles per hour)", "Authority (feet)", "Light Signal Color", "Crossing Signal"
+            "Block", "Track Occupancy", "Switch State", "Speed (miles per hour)", "Authority (feet)", "Light Signal Color", "Crossing Signal"
         ])
 
+        # Initial table setup (default to Blue Line)
+        self.update_table_for_line(0)  # Blue Line is index 0 initially
+
+        # Search block layout
+        self.search_bar = QLineEdit()
+        self.search_button = QPushButton("Search")
+        self.search_button.clicked.connect(self.search_block)
+
+        # Search layout 
+        search_layout = QHBoxLayout()
+        search_layout.addWidget(QLabel("Search Block: "))
+        search_layout.addWidget(self.search_bar)
+        search_layout.addWidget(self.search_button)
+
+        # Line selection layout
+        line_select_layout = QHBoxLayout()
+        line_select_layout.addWidget(QLabel("Select Line: "))
+        line_select_layout.addWidget(self.line_combo)
+
+        # Main layout
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(self.color_bar)  # Add the color bar widget
+        main_layout.addLayout(line_select_layout)
+        main_layout.addWidget(self.table_widget)
+        main_layout.addLayout(search_layout)
+
+        container = QWidget()
+        container.setLayout(main_layout)
+
+        self.setCentralWidget(container)
+
+    def update_color_bar(self):
+        # Set color bar based on selected line
+        current_index = self.line_combo.currentIndex()
+        if current_index == 0:  # Blue Line
+            self.color_bar.setStyleSheet("background-color: blue;")
+        elif current_index == 1:  # Green Line
+            self.color_bar.setStyleSheet("background-color: green;")
+        elif current_index == 2:  # Red Line
+            self.color_bar.setStyleSheet("background-color: red;")
+
+    def update_table_for_line(self, index):
+        # Update color bar when line selection changes
+        self.update_color_bar()
+
+        # Clear existing table contents
+        self.table_widget.clearContents()
+
+        # Re-initialize table headers
+        self.table_widget.setHorizontalHeaderLabels([
+            "Block", "Track Occupancy", "Switch State", "Speed (miles per hour)", "Authority (feet)", "Light Signal Color", "Crossing Signal"
+        ])
+
+        # Populate table based on selected line
         for row in range(15):
             self.table_widget.setItem(row, 0, QTableWidgetItem(str(row + 1)))  # Block numbers 1-15
             self.table_widget.setItem(row, 1, QTableWidgetItem("Occupied" if row % 2 == 0 else "Unoccupied"))
             
-            #drop down menu for switch position
-            switch_combo = QComboBox() 
-            switch_combo.addItems(["Block 6", "Block 11"])   
-            if row % 2 == 0:
+            # Drop down menu for switch position only at block 5 (example logic)
+            if row == 4:
+                switch_combo = QComboBox()
+                switch_combo.addItems(["Block 6", "Block 11"])
                 switch_combo.setCurrentText("Switch to Block 6")
+                self.table_widget.setCellWidget(row, 2, switch_combo)
             else:
-                switch_combo.setCurrentText("Block 11")
-            self.table_widget.setCellWidget(row, 2, switch_combo)
+                self.table_widget.setItem(row, 2, QTableWidgetItem("N/A"))
             
             self.table_widget.setItem(row, 3, QTableWidgetItem(str(60 + row * 5)))  # Speed in some units
             self.table_widget.setItem(row, 4, QTableWidgetItem("Authority " + str(row + 1)))
@@ -45,50 +107,34 @@ class TrackControllerWindow(QMainWindow):
             else:
                 color_item.setBackground(QColor("red"))
             self.table_widget.setItem(row, 5, color_item)
-        
-        #Search block layout
-        self.search_bar = QLineEdit()
-        self.search_button = QPushButton("Search")
-        self.search_button.clicked.connect(self.search_block)
-
-        #search layout 
-        
-        search_layout = QHBoxLayout()
-        search_layout.addWidget(QLabel("Search Block: "))
-        search_layout.addWidget(self.search_bar)
-        search_layout.addWidget(self.search_button)
-        
-        #set layout
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(self.table_widget)
-        main_layout.addLayout(search_layout)
-
-        container = QWidget()
-        container.setLayout(main_layout)
-
-        self.setCentralWidget(container)
+            
+            # Crossing signal for block 3 (example logic)
+            if row == 2:
+                self.table_widget.setItem(row, 6, QTableWidgetItem("Crossing Active"))
+            else:
+                self.table_widget.setItem(row, 6, QTableWidgetItem("N/A"))
 
     def search_block(self):
         block_number = self.search_bar.text()
         if block_number.isdigit():
             block_number = int(block_number)
-            if 1<= block_number <= 15:
+            if 1 <= block_number <= 15:
                 self.table_widget.selectRow(block_number - 1)
                 self.table_widget.scrollToItem(self.table_widget.item(block_number - 1, 0),
                                                QTableWidget.PositionAtCenter)
             else:
-                self.show_error_message("Block number must be between 1 and 15 for Blue Line.")
+                self.show_error_message(f"Block number must be between 1 and 15 for {self.line_combo.currentText()}.")
         else:
-            self.show_error_message("Please enter a valid block number for blue line.")
-    
+            self.show_error_message(f"Please enter a valid block number for {self.line_combo.currentText()}.")
+
     def show_error_message(self, message):
         error_dialog = QMessageBox()
-        error_dialog.setIcon(QMessageBox.warning)
+        error_dialog.setIcon(QMessageBox.Warning)
         error_dialog.setText(message)
         error_dialog.setWindowTitle("Error")
         error_dialog.exec()
 
 app = QApplication(sys.argv)
 window = TrackControllerWindow()
-window.show() #IMPORTANT!!!
-app.exec()
+window.show()
+sys.exit(app.exec())
