@@ -151,8 +151,9 @@ class TrackControllerWindow(QMainWindow):
             for file_name in file_names:
                 try:
                     # Assuming track_occupancies and authority are initialized correctly
-                    track_occupancies = [False] * 16  # Initialize with 16 elements (index 0 to 15)
+                    track_occupancies = [False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True ]  # Initialize with 16 elements (index 0 to 15)
                     authority = 0  # Example initial authority
+                    print(f"Blue Line Example Instance 1")
                     plc_instance = HWPLC(track_occupancies, authority)
                     
                     # Simulate PLC logic

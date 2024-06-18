@@ -8,6 +8,6 @@ class HardwareTrackController:
         self.light_StationB = False
         self.light_StationC = False
         self.crossing_signal = False
-        self.plc()
+        self.hw_plc()
 
  
