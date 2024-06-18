@@ -1,11 +1,11 @@
 # train_system/track_controller/HW_PLC.py
 class HWPLC:
  #INITIALIZE
- def __init__(self, track_occupancies, Authority):
+ def __init__(self, track_occupancies, authority):
         """
         Initialize all variables
         """
-        self.Authority = Authority
+        self.authority = authority
         self.track_occupancies = track_occupancies
         self.switch_position = False
         self.light_StationB = False
@@ -84,7 +84,7 @@ class HWPLC:
         self.crossing_signal = False
         print("Crossing Signal is up. Pedestrians can now cross the tracks.")
 
-    return self.switch_position, self.crossing_signal, self.light_StationB, self.light_StationC, self.Authority    
+    return self.switch_position, self.crossing_signal, self.light_StationB, self.light_StationC, self.authority    
 
 
 # Test main function
@@ -93,12 +93,12 @@ def main():
     Test Bench
     """
 
-    Authority = 55
+    authority = 55
     #            yard   1      2      3     4       5      6      7      8      9     10      11     12     13     14     15
     blue_line1 = [False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False ]
     print(f"Blue Line Instance 1")
 
-    HWPLC(blue_line1, Authority)
+    HWPLC(blue_line1, authority)
 
 
 if __name__ == "__main__":
