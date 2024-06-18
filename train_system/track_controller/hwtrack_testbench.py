@@ -1,6 +1,6 @@
 # train_system/track_controller/hwtrack_testbench.py
 
-from track_controller import hw_plc
+from hw_plc import HWPLC
 
 # Test main function
 def main():
@@ -13,7 +13,7 @@ def main():
     blue_line1 = [False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False ]
     print(f"Blue Line Instance 1")
 
-    PLC = hw_plc.HWPLC(blue_line1, authority)
+    PLC = HWPLC(blue_line1, authority)
 
 
 if __name__ == "__main__":

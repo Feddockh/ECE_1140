@@ -12,7 +12,14 @@ class HWPLC:
         self.light_StationC = False
         self.crossing_signal = False
         self.plc()
+ 
+ def set_occupancies(self,track_occupancies):
+     self.track_occupancies = track_occupancies
+     self.plc()
 
+ def set_authority(self, authority):
+     self.authority = authority
+     self.plc()
  #PLC
  def plc(self):
     """
@@ -86,20 +93,3 @@ class HWPLC:
 
     return self.switch_position, self.crossing_signal, self.light_StationB, self.light_StationC, self.authority    
 
-
-# Test main function
-def main():
-    """
-    #Test Bench
-"""
-
-    authority = 55
-    #            yard   1      2      3     4       5      6      7      8      9     10      11     12     13     14     15
-    blue_line1 = [False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False ]
-    print(f"Blue Line Instance 1")
-
-    HWPLC(blue_line1, authority)
-
-
-if __name__ == "__main__":
-    main()

@@ -61,5 +61,3 @@ app = QApplication(sys.argv)
 window = TrackControllerWindow()
 window.show() #IMPORTANT!!!
 app.exec()
-
-
