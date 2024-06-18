@@ -1,12 +1,12 @@
 # train_system/track_controller/HW_PLC.py
 class HWPLC:
  #INITIALIZE
- def __init__(self, new_track_occupancies, Authority):
+ def __init__(self, track_occupancies, Authority):
         """
         Initialize all variables
         """
         self.Authority = Authority
-        self.track_occupancies = new_track_occupancies
+        self.track_occupancies = track_occupancies
         self.switch_position = False
         self.light_StationB = False
         self.light_StationC = False
