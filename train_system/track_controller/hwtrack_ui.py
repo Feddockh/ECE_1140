@@ -1,7 +1,12 @@
 import sys
 from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QHBoxLayout, QLabel, QApplication, QLineEdit, QMainWindow, QTableWidgetItem, QTableWidget, QPushButton, QVBoxLayout, QWidget, QComboBox, QMessageBox
+from PyQt6.QtWidgets import (
+    QHBoxLayout, QLabel, QApplication, QLineEdit, QMainWindow, 
+    QTableWidgetItem, QTableWidget, QPushButton, QVBoxLayout, 
+    QWidget, QComboBox, QMessageBox, QFileDialog
+)
 from PyQt6.QtCore import Qt
+from hw_plc import HWPLC  # Adjust the import path as per your directory structure
 
 class TrackControllerWindow(QMainWindow):
     
@@ -39,23 +44,32 @@ class TrackControllerWindow(QMainWindow):
         self.search_button = QPushButton("Search")
         self.search_button.clicked.connect(self.search_block)
 
-        # Search layout 
+        # Upload PLC button
+        self.upload_button = QPushButton("Upload PLC")
+        self.upload_button.clicked.connect(self.upload_plc_code)
+
+        # Search box layout 
         search_layout = QHBoxLayout()
         search_layout.addWidget(QLabel("Search Block: "))
         search_layout.addWidget(self.search_bar)
         search_layout.addWidget(self.search_button)
 
-        # Line selection layout
+        # Upload PLC layout
+        upload_layout = QHBoxLayout()
+        upload_layout.addWidget(self.upload_button)
+
+        # Line selection layout (TOP of Screen)
         line_select_layout = QHBoxLayout()
         line_select_layout.addWidget(QLabel("Select Line: "))
         line_select_layout.addWidget(self.line_combo)
 
-        # Main layout
+        # The table layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.color_bar)  # Add the color bar widget
         main_layout.addLayout(line_select_layout)
         main_layout.addWidget(self.table_widget)
         main_layout.addLayout(search_layout)
+        main_layout.addLayout(upload_layout)
 
         container = QWidget()
         container.setLayout(main_layout)
@@ -126,6 +140,34 @@ class TrackControllerWindow(QMainWindow):
                 self.show_error_message(f"Block number must be between 1 and 15 for {self.line_combo.currentText()}.")
         else:
             self.show_error_message(f"Please enter a valid block number for {self.line_combo.currentText()}.")
+
+    def upload_plc_code(self):
+        file_dialog = QFileDialog()
+        file_dialog.setNameFilter("Python Files (*.py)")
+        file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
+        if file_dialog.exec():
+            file_names = file_dialog.selectedFiles()
+            # Handle the uploaded file(s) here
+            for file_name in file_names:
+                try:
+                    # Assuming track_occupancies and authority are initialized correctly
+                    track_occupancies = [False] * 16  # Initialize with 16 elements (index 0 to 15)
+                    authority = 0  # Example initial authority
+                    plc_instance = HWPLC(track_occupancies, authority)
+                    
+                    # Simulate PLC logic
+                    switch_position, crossing_signal, light_StationB, light_StationC, authority = plc_instance.plc()
+
+                    # Update table based on PLC simulation results
+                    # Example: update switch state and authority for block 5
+                    block_number = 5  # Example block number
+                    switch_combo = self.table_widget.cellWidget(block_number - 1, 2)
+                    switch_combo.setCurrentText(f"Switch to Block {11 if switch_position else 6}")
+                    
+                    self.table_widget.item(block_number - 1, 4).setText(f"Authority {authority}")
+
+                except Exception as e:
+                    self.show_error_message(f"Error loading or executing PLC file: {str(e)}")
 
     def show_error_message(self, message):
         error_dialog = QMessageBox()
