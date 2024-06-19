@@ -172,7 +172,7 @@ class TrackControllerWindow(QMainWindow):
 
     def show_error_message(self, message):
         error_dialog = QMessageBox()
-        error_dialog.setIcon(QMessageBox.Warning)
+        error_dialog.setIcon(QMessageBox.warning)
         error_dialog.setText(message)
         error_dialog.setWindowTitle("Error")
         error_dialog.exec()
