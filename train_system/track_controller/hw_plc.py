@@ -89,8 +89,8 @@ class HWPLC:
     #check if path to station C is occupied
         elif(self.track_occupancies[11] or self.track_occupancies[12] or self.track_occupancies[13] 
             or self.track_occupancies[14] or self.track_occupancies[15]):
-            self.light_colorB = True
-            self.light_colorC = False
+            self.light_colorB = False
+            self.light_colorC = True
            #print("Station C Light is GREEN.")
             #print("Station B light is RED.")
 
