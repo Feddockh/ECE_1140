@@ -1,4 +1,5 @@
 # train_system/track_controller/hw_plc.py
+
 class HWPLC:
  #INITIALIZE
     def __init__(self, track_occupancies, authority):

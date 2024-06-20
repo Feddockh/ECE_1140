@@ -111,12 +111,7 @@ class TrackControllerWindow(QMainWindow):
         ])
 
         # Dummy data initialization for occupancy status
-        block_occupancies = [
-            False, False, False,  # Blocks 1, 2, 3
-            True, True, True, True, True,  # Blocks 4, 5, 6, 7, 8
-            False, False, False, False, False,  # Blocks 9, 10, 11, 12, 13
-            True, True, True  # Blocks 14, 15, 16
-        ]
+        block_occupancies = [False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True ]
 
         # Populate table based on selected line
         for row in range(15):
@@ -227,7 +222,7 @@ class TrackControllerWindow(QMainWindow):
             for file_name in file_names:
                 try:
                     # Assuming track_occupancies and authority are initialized correctly
-                    track_occupancies = [False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True ]  # Initialize with 16 elements (index 0 to 15)
+                    track_occupancies = [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True ]  # Initialize with 16 elements (index 0 to 15)
                     authority = 0  # Example initial authority
                     print(f"Blue Line Example Instance 1")
                     plc_instance = HWPLC(track_occupancies, authority)
