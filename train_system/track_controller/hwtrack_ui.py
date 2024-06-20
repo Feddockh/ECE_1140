@@ -81,6 +81,7 @@ class TrackControllerWindow(QMainWindow):
         main_layout.addWidget(self.test_bench_button)
         main_layout.addWidget(self.maintenance_button)
         main_layout.addWidget(self.primary_ui_button)
+        main_layout.addLayout(upload_layout)  # Add the upload button layout to the main layout
 
         container = QWidget()
         container.setLayout(main_layout)
@@ -143,7 +144,7 @@ class TrackControllerWindow(QMainWindow):
 
             # Authority
             authority = self.track_controller.authority
-            self.table_widget.setItem(row, 4, QTableWidgetItem(f"Authority {authority}"))
+            self.table_widget.setItem(row, 4, QTableWidgetItem(f" {authority} feet"))
 
             # Light signals
             if (block_number in [2, 3, 4] and block_occupancies[1]) or \

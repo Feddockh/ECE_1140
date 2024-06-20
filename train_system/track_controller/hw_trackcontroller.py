@@ -19,12 +19,12 @@ class HWTrackController:
 
     def get_light_station_b(self):
         self.plc.light_signals()
-        light_station_b = "RED" if not self.plc.light_colorB else "GREEN"
+        light_station_b = "GREEN" if not self.plc.light_colorB else "RED"
         print("Light Station B:", light_station_b)
         return light_station_b
 
     def get_light_station_c(self):
         self.plc.light_signals()
-        light_station_c = "RED" if not self.plc.light_colorC else "GREEN"
+        light_station_c = "GREEN" if not self.plc.light_colorC else "RED"
         print("Light Station C:", light_station_c)
         return light_station_c

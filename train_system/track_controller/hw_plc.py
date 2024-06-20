@@ -12,7 +12,6 @@ class HWPLC:
         self.light_colorC = False
         self.crossing_signal = False
         self.plc()
-
  #PLC
     def plc(self):
         """
@@ -28,8 +27,6 @@ class HWPLC:
         self.crossing_signals()
         self.switch_positions()
         self.light_signals()
-
-
 
     def switch_positions(self):
         #Determining switch position
