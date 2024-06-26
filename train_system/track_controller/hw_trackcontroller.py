@@ -2,7 +2,9 @@
 from hw_plc import HWPLC
 
 class HWTrackController:
-    def __init__(self, track_occupancies, authority):
+    def __init__(self, track_occupancies):
+        authority = 45
+        
         self.plc = HWPLC(track_occupancies, authority)
         # Initialize the PLC to determine the initial states
         self.plc.plc()
@@ -28,3 +30,4 @@ class HWTrackController:
         light_station_c = "GREEN" if not self.plc.light_colorC else "RED"
         print("Light Station C:", light_station_c)
         return light_station_c
+

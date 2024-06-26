@@ -1,29 +1,37 @@
-import serial
-from hw_trackcontroller import HWTrackController
+import paramiko
+class RaspberryPI:
+    def __init__(self, hostname, username, password):
+        self.hostname = hostname
+        self.username = username
+        self.password = password
 
-def main():
-    ser = serial.Serial('/dev/ttyUSB0', 9600)  # Adjust this if necessary
-    while True:
-        if ser.in_waiting > 0:
-            data = ser.readline().decode('utf-8').strip()
-            try:
-                # Parse the incoming data
-                parts = data.split(',')
-                track_occupancies = [bool(int(x)) for x in parts[:-1]]
-                authority = int(parts[-1])
+    def send_command_via_ssh(self, message):
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(self.hostname, username=self.username, password=self.password)
+            
+            # Use echo command to send the message and print it
+            command = f'echo "{message}"'
+            stdin, stdout, stderr = ssh.exec_command(command)
+            print("STDOUT:")
+            print(stdout.read().decode())
+            print("STDERR:")
+            print(stderr.read().decode())
 
-                # Run the PLC logic
-                controller = HWTrackController(track_occupancies, authority)
-                switch_position = controller.get_switch_position()
-                crossing_signal = controller.get_crossing_signal()
-                light_station_b = controller.get_light_station_b()
-                light_station_c = controller.get_light_station_c()
+            # Close the connection
+            ssh.close()
+        except paramiko.AuthenticationException as auth_exc:
+            print(f"Authentication failed: {auth_exc}")
+        except paramiko.SSHException as ssh_exc:
+            print(f"SSH connection failed: {ssh_exc}")
+        except Exception as exc:
+            print(f"Exception occurred: {exc}")
 
-                # Prepare the result as a delimited string
-                result = f"{int(switch_position)},{int(crossing_signal)},{light_station_b},{light_station_c}\n"
-                ser.write(result.encode('utf-8'))
-            except Exception as e:
-                ser.write(('Error: ' + str(e) + '\n').encode('utf-8'))
+# Example usage:
+hostname = 'raspberrypi'
+username = 'garrett'
+password = 'Cornell@26'
 
-if __name__ == "__main__":
-    main()
+pi = RaspberryPI(hostname, username, password)
+pi.send_command_via_ssh("Hello, Raspberry Pi!")

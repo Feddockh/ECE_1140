@@ -111,7 +111,7 @@ class TrackControllerWindow(QMainWindow):
         ])
 
         # Dummy data initialization for occupancy status
-        block_occupancies = [False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True ]
+        block_occupancies = track_occupancies
 
         # Populate table based on selected line
         for row in range(15):
@@ -127,7 +127,7 @@ class TrackControllerWindow(QMainWindow):
             # Switch State
             switch_combo = QComboBox()
             if block_number == 5:
-                switch_combo.addItems(["Station B", "Station C"])
+                switch_combo.addItems(["Station B", "Station C", "STOP"])
                 switch_combo.setCurrentText("Station C" if self.track_controller.switch_position else "Station B")
             else:
                 switch_combo.setEnabled(False)  # Disable ComboBox for non-applicable blocks
@@ -244,7 +244,7 @@ class TrackControllerWindow(QMainWindow):
 app = QApplication(sys.argv)
 
 # Example initialization of HWTrackController
-track_occupancies = [False] * 16
+track_occupancies = [False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False ]
 authority = 45
 track_controller = HWPLC(track_occupancies, authority)
 

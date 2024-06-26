@@ -96,3 +96,8 @@ class HWPLC:
             #print("Station B light is RED.")
 
         return self.light_colorB, self.light_colorC
+
+#add another function that parses through the track that was uploaded, 
+#and determine the number of switches
+#this will allow me to dynamically react to changes in the track. 
+#
