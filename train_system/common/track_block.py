@@ -1,8 +1,8 @@
 # train_system/common/track_block.py
 
 from PyQt6.QtCore import QObject, pyqtSignal
-from train_system.common.crossing_signal import CrossingSignal
-from train_system.common.station import Station
+from common.crossing_signal import CrossingSignal
+from common.station import Station
 
 class TrackBlock(QObject):
 
